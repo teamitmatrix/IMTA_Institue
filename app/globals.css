@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+/*
+ * IMTA AI Institute design system tokens.
+ * Deep navy + electric blue on white / cool light-gray. Change brand values
+ * here only — every component reads these tokens.
+ */
+@theme {
+  /* Ink (text) */
+  --color-ink: #0a1226;
+  --color-ink-muted: #46506a;
+  --color-ink-subtle: #5f6880; /* ≥ 4.5:1 on white and surface-muted (WCAG AA) */
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f7fb;
+  --color-surface-sunken: #eef1f7;
+  --color-line: #e3e7ef;
+  --color-line-strong: #cfd5e1;
+
+  /* Brand — electric blue */
+  --color-brand: #2e5bff;
+  --color-brand-hover: #1f47e6;
+  --color-brand-soft: #edf1ff;
+  --color-brand-ink: #2148e0;
+  --color-brand-glow: #6f8dff;
+  /* Decorative AI accent (glows, lines only — never for text on white) */
+  --color-signal: #38d6f5;
+
+  /* Navy bands */
+  --color-navy: #081230;
+  --color-navy-raised: #0f1c42;
+  --color-navy-line: #22305a;
+  --color-on-navy: #ffffff;
+  --color-on-navy-muted: #a7b2cf;
+
+  /* Feedback */
+  --color-success: #0f7a55;
+  --color-success-soft: #e7f6ef;
+  --color-danger: #c22f25;
+  --color-danger-soft: #fdecea;
+
+  /* Typography — variables provided by next/font in app/layout.tsx */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radius */
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(10 18 38 / 0.04), 0 1px 1px rgb(10 18 38 / 0.03);
+  --shadow-lift: 0 1px 2px rgb(10 18 38 / 0.05), 0 12px 32px -12px rgb(10 18 38 / 0.18);
+  --shadow-glow: 0 0 0 1px rgb(46 91 255 / 0.12), 0 24px 64px -24px rgb(46 91 255 / 0.45);
+
+  /* Layout */
+  --container-site: 76rem;
+  --spacing-header: 4.25rem;
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--spacing-header) + 0.5rem);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: rgb(46 91 255 / 0.18);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  /* Fine engineering grid used behind the hero and navy bands. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(10 18 38 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(10 18 38 / 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .bg-grid-navy {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 40%, transparent);
+  }
+
+  .mask-radial {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+}
+
+/*
+ * Motion without JavaScript.
+ * - .animate-fade-up: one-off entrance (cards, revealed examples).
+ * - .reveal: scroll-driven entrance via animation-timeline: view(). Browsers
+ *   without support simply show the content (never stuck invisible), and it
+ *   is disabled for prefers-reduced-motion.
+ */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.4s var(--ease-out-soft) both;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry var(--reveal-shift, 0%) entry calc(45% + var(--reveal-shift, 0%));
+    }
+  }
+}
+
+/* Live-indicator pulse (disabled by the reduced-motion rule above). */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}

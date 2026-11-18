@@ -1,0 +1,6 @@
+# Keep LF line endings in the repo on every OS (the seed drift test compares bytes).
+* text=auto eol=lf
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.ico binary

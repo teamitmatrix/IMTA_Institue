@@ -1,0 +1,7 @@
+import type { ComponentProps } from "react";
+import { cn } from "@/lib/utils/cn";
+
+/** Centered content column with the site's standard horizontal gutters. */
+export function Container({ className, ...props }: ComponentProps<"div">) {
+  return <div className={cn("mx-auto w-full max-w-site px-4 sm:px-6 lg:px-8", className)} {...props} />;
+}
