@@ -57,6 +57,10 @@ export const optionalText = (max: number) =>
  * - `startedAt` is when the form was rendered (ms); humans take > 3 s.
  */
 export const spamTrapFields = {
-  website: z.optional(z.string().check(z.maxLength(0))),
+  // Accepted here (length-capped) so the Server Action's checkSpamTraps can
+  // drop filled honeypots *silently*. Rejecting it in the schema would tell
+  // bots which field is the trap, and would block autofilled real users with
+  // an error on a field they cannot see.
+  website: z.optional(z.string().check(z.maxLength(500))),
   startedAt: z.number().check(z.int(), z.positive()),
 };

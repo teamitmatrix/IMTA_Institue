@@ -6,9 +6,20 @@ import { z } from "zod";
  * can inline it at build time.
  */
 
-const siteUrlSchema = z.url().default("http://localhost:3000");
+// Production falls back to the live domain so a missing env var can never
+// publish localhost canonicals, sitemap entries or OG URLs.
+const siteUrlSchema = z
+  .url()
+  .default(process.env.NODE_ENV === "production" ? "https://institute.imta.io" : "http://localhost:3000");
 
-export const siteUrl = siteUrlSchema.parse(process.env.NEXT_PUBLIC_SITE_URL || undefined).replace(/\/$/, "");
+const rawSiteUrl = siteUrlSchema.parse(process.env.NEXT_PUBLIC_SITE_URL || undefined).replace(/\/$/, "");
+
+// The site is HTTPS-only (HSTS), so canonicals and the sitemap must be too —
+// even if the host's env var was entered as http://. Local URLs are left alone.
+export const siteUrl =
+  process.env.NODE_ENV === "production" && !/^http:\/\/(localhost|127\.0\.0\.1)(:|$)/.test(rawSiteUrl)
+    ? rawSiteUrl.replace(/^http:\/\//, "https://")
+    : rawSiteUrl;
 
 const supabasePublicSchema = z.object({
   url: z.url({ error: "NEXT_PUBLIC_SUPABASE_URL must be a valid URL" }),

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { applicationSchema } from "@/lib/validations/application";
 import { corporateInquirySchema } from "@/lib/validations/corporate-inquiry";
+import { checkSpamTraps } from "@/lib/security/spam";
 
 const validApplication = {
   fullName: "Jordan Lee",
@@ -51,8 +52,11 @@ test("application enforces length limits and link-stuffing", () => {
   assert.equal(applicationSchema.safeParse({ ...validApplication, message: "my portfolio: https://me.dev" }).success, true);
 });
 
-test("application honeypot must be empty", () => {
-  assert.equal(applicationSchema.safeParse({ ...validApplication, website: "http://spam" }).success, false);
+test("a filled honeypot passes the schema so the server can drop it silently", () => {
+  const parsed = applicationSchema.safeParse({ ...validApplication, website: "http://spam" });
+  assert.equal(parsed.success, true);
+  assert.deepEqual(checkSpamTraps(parsed.data!), { spam: true, reason: "honeypot" });
+  assert.equal(applicationSchema.safeParse({ ...validApplication, website: "x".repeat(501) }).success, false);
 });
 
 const validInquiry = {
