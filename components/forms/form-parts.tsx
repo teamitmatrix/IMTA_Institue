@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import type { FieldValues, Path, PathValue, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
 import { Check, CircleCheck, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -102,12 +102,31 @@ export function SuccessPanel({
   actionLabel: string;
   onAction: () => void;
 }) {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  // The panel is much shorter than the form it replaces, so the confirmation
+  // can land above the viewport (under the sticky header). Bring it into view
+  // and move focus to it so keyboard and screen-reader users land on it too.
+  useEffect(() => {
+    const heading = headingRef.current;
+    if (!heading) return;
+    const panel = heading.parentElement ?? heading;
+    const { top, bottom } = panel.getBoundingClientRect();
+    if (top < 80 || bottom > window.innerHeight) {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      panel.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+    }
+    heading.focus({ preventScroll: true });
+  }, []);
+
   return (
     <div role="status" className="flex flex-col items-center py-10 text-center">
       <span className="grid size-14 place-items-center rounded-full bg-success-soft text-success">
         <CircleCheck aria-hidden className="size-7" strokeWidth={1.75} />
       </span>
-      <h3 className="mt-5 text-2xl font-semibold tracking-tight text-ink">{title}</h3>
+      <h3 ref={headingRef} tabIndex={-1} className="mt-5 text-2xl font-semibold tracking-tight text-ink outline-none">
+        {title}
+      </h3>
       <div className="mt-2 max-w-sm text-ink-muted">{children}</div>
       <Button variant="outline" className="mt-7" onClick={onAction}>
         {actionLabel}
