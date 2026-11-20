@@ -4,6 +4,7 @@ import { site } from "@/data/site";
 import { footerNav } from "@/data/navigation";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/layout/logo";
+import { socialIcons } from "@/components/ui/social-icons";
 
 /** Site footer (BRD §E-13): link columns + the PDF's footer line. */
 export function SiteFooter() {
@@ -20,6 +21,25 @@ export function SiteFooter() {
             <Mail aria-hidden className="size-4" strokeWidth={1.75} />
             {site.contactEmail}
           </a>
+          <ul aria-label="Follow us" className="mt-5 flex items-center gap-3">
+            {site.social.map((profile) => {
+              const Icon = socialIcons[profile.network];
+              return (
+                <li key={profile.network}>
+                  <a
+                    href={profile.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${site.name} on ${profile.label} (opens in a new tab)`}
+                    title={profile.label}
+                    className="grid size-10 place-items-center rounded-full border border-line-strong bg-surface text-ink-muted transition-colors hover:border-brand hover:bg-brand hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                  >
+                    <Icon className="size-[18px]" />
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
 
         <div className="grid gap-10 sm:col-span-2 sm:grid-cols-3 lg:col-span-8">

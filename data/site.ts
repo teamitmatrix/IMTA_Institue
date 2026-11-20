@@ -17,6 +17,11 @@ export const site = {
     url: "https://imta.io",
   },
   locations: ["Pakistan", "Saudi Arabia", "USA"],
+  /** Official social profiles — footer buttons and Organization `sameAs`. */
+  social: [
+    { network: "facebook", label: "Facebook", url: "https://www.facebook.com/profile.php?id=61596705149869" },
+    { network: "instagram", label: "Instagram", url: "https://www.instagram.com/imtaaiinstitute/" },
+  ],
   copyright: "© 2026 IMTA. All rights reserved.",
 } as const;
 

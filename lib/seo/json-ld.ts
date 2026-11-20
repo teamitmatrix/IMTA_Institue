@@ -15,6 +15,7 @@ export function organizationJsonLd() {
     email: site.contactEmail,
     description: site.description,
     parentOrganization: { "@type": "Organization", name: site.parent.name, url: site.parent.url },
+    sameAs: site.social.map((profile) => profile.url),
   };
 }
 
